@@ -21,10 +21,11 @@ type Driver struct {
 	endpoint string
 	region   string
 	token    string
+	ready    bool
+	srv      *grpc.Server
 	csi.UnimplementedNodeServer
 	csi.UnimplementedControllerServer
 	csi.UnimplementedIdentityServer
-	srv *grpc.Server
 }
 
 type InputParams struct {
@@ -75,7 +76,6 @@ func (d *Driver) Run() error {
 	if err != nil {
 		return fmt.Errorf("failed to listen: %s", err.Error())
 	}
-	fmt.Println(listener)
 	d.srv = grpc.NewServer()
 
 	// https://github.com/container-storage-interface/spec/blob/master/lib/go/csi/csi_grpc.pb.go#L1334C1-L1334C5
@@ -84,5 +84,6 @@ func (d *Driver) Run() error {
 	csi.RegisterControllerServer(d.srv, d)
 	csi.RegisterIdentityServer(d.srv, d)
 
+	d.ready = true
 	return d.srv.Serve(listener)
 }

@@ -1,0 +1,45 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: bsos
+  name: bsos
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: bsos
+  strategy: {}
+  template:
+    metadata:
+      labels:
+        app: bsos
+    spec:
+      serviceAccountName: bsos-sa
+      containers:
+      - image: k8s.gcr.io/sig-storage/csi-provisioner:v3.1.0
+        name: external-provisioner
+        args:
+        - "--csi-address=$(CSI_ENDPOINT)"
+        env:
+          - name: CSI_ENDPOINT
+            value: "unix:///var/lib/csi/sockets/pluginproxy/csi.sock"
+        imagePullPolicy: IfNotPresent
+        volumeMounts:
+        - mountPath: /var/lib/csi/sockets/pluginproxy
+          name: cache-volume
+      - image: stark985/bsos:0.0.4
+        name: bsos
+        args:
+        - "--endpoint=$(CSI_ENDPOINT)"
+        env:
+          - name: CSI_ENDPOINT
+            value: "unix:///var/lib/csi/sockets/pluginproxy/csi.sock"
+        volumeMounts:
+        - mountPath: /var/lib/csi/sockets/pluginproxy
+          name: cache-volume
+        imagePullPolicy: IfNotPresent
+      volumes:
+      - name: cache-volume
+        emptyDir: {}
+status: {}
