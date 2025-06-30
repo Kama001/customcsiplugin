@@ -17,30 +17,36 @@ const (
 )
 
 type Driver struct {
-	name     string
-	endpoint string
-	region   string
-	token    string
-	ready    bool
-	srv      *grpc.Server
+	name       string
+	endpoint   string
+	region     string
+	token      string
+	access_key string
+	secret_key string
+	ready      bool
+	srv        *grpc.Server
 	csi.UnimplementedNodeServer
 	csi.UnimplementedControllerServer
 	csi.UnimplementedIdentityServer
 }
 
 type InputParams struct {
-	Name     string
-	Endpoint string
-	Region   string
-	Token    string
+	Name       string
+	Endpoint   string
+	Region     string
+	Token      string
+	Access_Key string
+	Secret_Key string
 }
 
 func NewDriver(params InputParams) *Driver {
 	return &Driver{
-		name:     params.Name,
-		endpoint: params.Endpoint,
-		region:   params.Region,
-		token:    params.Token,
+		name:       params.Name,
+		endpoint:   params.Endpoint,
+		region:     params.Region,
+		token:      params.Token,
+		access_key: params.Access_Key,
+		secret_key: params.Secret_Key,
 	}
 }
 

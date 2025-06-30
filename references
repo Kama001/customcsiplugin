@@ -1,0 +1,17 @@
+https://kubernetes.io/docs/concepts/storage/storage-classes/
+https://kubernetes.io/docs/concepts/storage/persistent-volumes/#persistentvolumeclaims
+
+kubectl create secret generic aws-credentials --from-literal=aws_access_key_id=<access_key> --from-literal=aws_secret_access_key=<secret_key> --from-literal=aws_session_token=<token>
+
+kubectl create secret generic aws-credentials --from-literal=aws_access_key_id="<access_key>" --from-literal=aws_secret_access_key="<secret_key>" --from-literal=aws_session_token="<token>"
+
+kind load docker-image my-ebs-csi-driver:latest
+
+$ kind get clusters
+> three-node
+
+$ kind load docker-image stark985/bsos:fix_idempotency_issue --name three-node
+
+$ docker exec -it three-node-control-plane ctr -n k8s.io images rm stark985/ bsos:fix_idempotency_issue
+
+
