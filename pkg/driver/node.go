@@ -2,8 +2,11 @@ package driver
 
 import (
 	"context"
+	"os"
 
 	"github.com/container-storage-interface/spec/lib/go/csi"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
 )
 
 func (d *Driver) NodeStageVolume(context.Context, *csi.NodeStageVolumeRequest) (*csi.NodeStageVolumeResponse, error) {
@@ -28,5 +31,11 @@ func (d *Driver) NodeGetCapabilities(context.Context, *csi.NodeGetCapabilitiesRe
 	return nil, nil
 }
 func (d *Driver) NodeGetInfo(context.Context, *csi.NodeGetInfoRequest) (*csi.NodeGetInfoResponse, error) {
-	return nil, nil
+	hostname, err := os.Hostname()
+	if err != nil {
+		return nil, status.Error(codes.Internal, "Error getting the hostname")
+	}
+	return &csi.NodeGetInfoResponse{
+		NodeId: hostname,
+	}, nil
 }

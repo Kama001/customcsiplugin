@@ -1,0 +1,74 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: bsos
+  name: bsos
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: bsos
+  strategy: {}
+  template:
+    metadata:
+      labels:
+        app: bsos
+    spec:
+      serviceAccountName: bsos-sa
+      containers:
+      - image: k8s.gcr.io/sig-storage/csi-provisioner:v3.1.0
+        name: external-provisioner
+        args:
+        - "--csi-address=$(CSI_ENDPOINT)"
+        env:
+          - name: CSI_ENDPOINT
+            value: "unix:///var/lib/csi/sockets/pluginproxy/csi.sock"
+        imagePullPolicy: IfNotPresent
+        volumeMounts:
+        - mountPath: /var/lib/csi/sockets/pluginproxy
+          name: cache-volume
+      - image: stark985/bsos:0.0.9
+        name: bsos
+        args:
+        - "--endpoint=$(CSI_ENDPOINT)"
+        - "--access_key=$(aws_access_key)"
+        - "--secret_key=$(aws_secret_key)"
+        - "--token=$(aws_session_token)"
+        env:
+          - name: CSI_ENDPOINT
+            value: "unix:///var/lib/csi/sockets/pluginproxy/csi.sock"
+          - name: aws_access_key
+            valueFrom:
+              secretKeyRef:
+                name: aws-credentials
+                key: aws_access_key_id
+          - name: aws_secret_key
+            valueFrom:
+              secretKeyRef:
+                name: aws-credentials
+                key: aws_secret_access_key
+          - name: aws_session_token
+            valueFrom:
+              secretKeyRef:
+                name: aws-credentials
+                key: aws_session_token
+        volumeMounts:
+        - mountPath: /var/lib/csi/sockets/pluginproxy
+          name: cache-volume
+        imagePullPolicy: IfNotPresent
+      - image: k8s.gcr.io/sig-storage/csi-attacher:v3.5.0
+        name: external-attacher
+        args:
+        - "--csi-address=$(CSI_ENDPOINT)"
+        - "-v=5"
+        env:
+        - name: CSI_ENDPOINT
+          value: /var/lib/csi/sockets/pluginproxy/csi.sock
+        volumeMounts:
+        - name: cache-volume
+          mountPath: /var/lib/csi/sockets/pluginproxy
+      volumes:
+      - name: cache-volume
+        emptyDir: {}
+status: {}
