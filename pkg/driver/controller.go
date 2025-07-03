@@ -100,3 +100,8 @@ func (d *Driver) CreateVolume(ctx context.Context, req *csi.CreateVolumeRequest)
 		},
 	}, nil
 }
+
+func (d *Driver) ControllerPublishVolume(context.Context, *csi.ControllerPublishVolumeRequest) (*csi.ControllerPublishVolumeResponse, error) {
+	fmt.Println("controller publish volume is called!!!")
+	return nil, nil
+}

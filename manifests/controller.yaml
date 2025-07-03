@@ -28,7 +28,7 @@ spec:
         volumeMounts:
         - mountPath: /var/lib/csi/sockets/pluginproxy
           name: cache-volume
-      - image: stark985/bsos:0.0.9
+      - image: stark985/bsos:0.0.10
         name: bsos
         args:
         - "--endpoint=$(CSI_ENDPOINT)"
@@ -61,7 +61,7 @@ spec:
         name: external-attacher
         args:
         - "--csi-address=$(CSI_ENDPOINT)"
-        - "-v=5"
+        # - "-v=5"
         env:
         - name: CSI_ENDPOINT
           value: /var/lib/csi/sockets/pluginproxy/csi.sock

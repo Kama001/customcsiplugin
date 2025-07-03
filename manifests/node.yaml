@@ -23,7 +23,7 @@ spec:
             mountPath: /csi
           - name: registration-dir
             mountPath: /registration
-      - image: stark985/bsos:0.0.9
+      - image: stark985/bsos:0.0.10
         name: node-plugin
         args:
         - "--endpoint=$(CSI_ENDPOINT)"

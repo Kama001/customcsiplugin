@@ -36,7 +36,8 @@ func main() {
 	shFile.Write([]byte("kubectl create secret generic aws-credentials " +
 		"--from-literal=aws_access_key_id=\"" + aws_access_key_id + "\" " +
 		"--from-literal=aws_secret_access_key=\"" + aws_secret_access_key + "\" " +
-		"--from-literal=aws_session_token=\"" + aws_session_token + "\""))
+		"--from-literal=aws_session_token=\"" + aws_session_token + "\"\n"))
+	shFile.Write([]byte("rm " + cwd + "/sercretsupdate.sh\n"))
 	cmd := exec.Command("/bin/bash", cwd+"/sercretsupdate.sh")
 	_, err := cmd.Output()
 	if err != nil {

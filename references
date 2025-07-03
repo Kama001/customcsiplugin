@@ -1,5 +1,7 @@
 https://kubernetes.io/docs/concepts/storage/storage-classes/
 https://kubernetes.io/docs/concepts/storage/persistent-volumes/#persistentvolumeclaims
+https://github.com/kubernetes-csi/external-attacher
+https://github.com/kubernetes-csi/node-driver-registrar
 
 kubectl create secret generic aws-credentials --from-literal=aws_access_key_id=<access_key> --from-literal=aws_secret_access_key=<secret_key> --from-literal=aws_session_token=<token>
 
@@ -13,5 +15,8 @@ $ kind get clusters
 $ kind load docker-image stark985/bsos:fix_idempotency_issue --name three-node
 
 $ docker exec -it three-node-control-plane ctr -n k8s.io images rm stark985/ bsos:fix_idempotency_issue
+
+// because of finalizer on pv this pv is not getting delete, so removed the finalizer, then pv got deleted
+$ kubectl patch pv pvc-d2afb07f-cf06-4c25-9a8a-1de1d23762ca -p '{"metadata":{"finalizers":null}}' --type=merge
 
 
